@@ -1,0 +1,117 @@
+name: Colour Vault CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: 1
+
+jobs:
+  # ─── Rust Core ──────────────────────────────────────────────────────────────
+  rust-test:
+    name: Rust Core — Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+
+      - name: Cache Cargo
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            core/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('core/Cargo.lock') }}
+
+      - name: Check formatting
+        working-directory: core
+        run: cargo fmt --check
+
+      - name: Clippy — deny warnings
+        working-directory: core
+        run: cargo clippy -- -D warnings
+
+      - name: Run tests
+        working-directory: core
+        run: cargo test --all-features
+
+      - name: Security audit
+        working-directory: core
+        run: |
+          cargo install cargo-audit --locked
+          cargo audit
+
+  # ─── MCP Server ─────────────────────────────────────────────────────────────
+  mcp-test:
+    name: MCP Server — Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: mcp/package-lock.json
+
+      - name: Install dependencies
+        working-directory: mcp
+        run: npm ci
+
+      - name: Lint
+        working-directory: mcp
+        run: npm run lint
+
+      - name: Build TypeScript
+        working-directory: mcp
+        run: npm run build
+
+      - name: Test
+        working-directory: mcp
+        run: npm test
+
+      - name: Security audit
+        working-directory: mcp
+        run: npm audit --audit-level=high
+
+  # ─── Release Build ───────────────────────────────────────────────────────────
+  build-release:
+    name: Build Release — ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    needs: [rust-test, mcp-test]
+    if: github.ref == 'refs/heads/main'
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            artifact: colour-vault-linux
+          - os: macos-latest
+            artifact: colour-vault-mac
+          - os: windows-latest
+            artifact: colour-vault-windows.exe
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Build release binary
+        working-directory: core
+        run: cargo build --release
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.artifact }}
+          path: core/target/release/colour*
