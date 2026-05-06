@@ -1,0 +1,40 @@
+# Rust
+core/target/
+**/*.rs.bk
+Cargo.lock.bak
+
+# Node
+node_modules/
+mcp/node_modules/
+interface/node_modules/
+mcp/dist/
+interface/dist/
+
+# Logs — never commit logs
+logs/
+*.log
+
+# Config with secrets — never commit
+colour.config.local.json
+.env
+.env.local
+.env.*.local
+
+# Sovereign deployment output
+sovereign-package/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Build artifacts
+releases/
+*.exe
+*.dmg
+*.AppImage
