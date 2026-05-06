@@ -1,0 +1,28 @@
+{
+  "name": "colour-vault",
+  "version": "0.1.0",
+  "description": "Post-quantum resistant open source cryptographic vault protocol",
+  "license": "Apache-2.0",
+  "author": "Colour Foundation <buildwithcolours@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/colour-foundation/colour-vault"
+  },
+  "private": true,
+  "scripts": {
+    "install:all": "cd mcp && npm install && cd ../interface && npm install",
+    "build": "cd core && cargo build --release && cd ../mcp && npm run build",
+    "test": "cd core && cargo test && cd ../mcp && npm test",
+    "start": "cd mcp && npm start",
+    "deploy:institution": "bash scripts/deploy-institution.sh",
+    "deploy:sovereign": "bash scripts/deploy-sovereign.sh",
+    "audit:rust": "cd core && cargo audit",
+    "audit:node": "cd mcp && npm audit",
+    "audit:all": "npm run audit:rust && npm run audit:node",
+    "lint:rust": "cd core && cargo clippy -- -D warnings",
+    "lint:node": "cd mcp && npm run lint"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
