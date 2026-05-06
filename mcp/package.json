@@ -1,0 +1,44 @@
+{
+  "name": "@colour-foundation/colour-vault-mcp",
+  "version": "0.1.0",
+  "description": "Colour Vault MCP server for institutional deployment",
+  "license": "Apache-2.0",
+  "author": "Colour Foundation <buildwithcolours@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/colour-foundation/colour-vault"
+  },
+  "main": "dist/server.js",
+  "types": "dist/server.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "dev": "ts-node src/server.ts",
+    "test": "jest",
+    "lint": "eslint src --ext .ts"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "zod": "^3.22.4",
+    "dotenv": "^16.3.1",
+    "winston": "^3.11.0",
+    "helmet": "^7.1.0",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/cors": "^2.8.17",
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.2",
+    "ts-node": "^10.9.2",
+    "jest": "^29.7.0",
+    "@types/jest": "^29.5.8",
+    "ts-jest": "^29.1.1",
+    "eslint": "^8.54.0",
+    "@typescript-eslint/parser": "^6.12.0",
+    "@typescript-eslint/eslint-plugin": "^6.12.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
