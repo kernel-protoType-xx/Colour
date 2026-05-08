@@ -5,99 +5,47 @@ edition = "2021"
 authors = ["Colour Foundation <buildwithcolours@gmail.com>"]
 description = "Post-quantum resistant cryptographic vault core"
 license = "Apache-2.0"
-repository = "https://github.com/colour-foundation/colour-vault"
-documentation = "https://github.com/colour-foundation/colour-vault/blob/main/ARCHITECTURE.md"
-keywords = ["cryptography", "post-quantum", "vault", "bitcoin", "ethereum"]
-categories = ["cryptography"]
-rust-version = "1.75"
 
 [lib]
 name = "colour_vault_core"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-# Post-quantum cryptography — NIST standardised
 pqcrypto-mlkem = "0.1"
 pqcrypto-mldsa = "0.1"
-pqcrypto-sphincsplus = "0.1"
+pqcrypto-sphincsplus = "0.7"
 pqcrypto-traits = "0.3"
-
-# Classical symmetric encryption — belt and suspenders
 aes-gcm = { version = "0.10", features = ["aes"] }
 chacha20poly1305 = "0.10"
-
-# Key derivation — memory hard
 argon2 = { version = "0.5", features = ["password-hash"] }
-
-# Shamir Secret Sharing
 sharks = { version = "0.5", features = ["std"] }
-
-# Secure random number generation
 rand = { version = "0.8", features = ["getrandom"] }
 rand_core = "0.6"
 getrandom = { version = "0.2", features = ["std"] }
-
-# Secure memory handling
 zeroize = { version = "1.7", features = ["derive"] }
 secrecy = "0.8"
-
-# Bitcoin
-bitcoin = { version = "0.31", features = ["rand"] }
-
-# Ethereum
-ethers-core = { version = "2.0", default-features = false }
-tiny-keccak = { version = "2.0", features = ["keccak"] }
-
-# Solana key derivation
-ed25519-dalek = { version = "2.0", features = ["rand_core"] }
-
-# BIP-32/BIP-44 HD derivation
-bip32 = "0.5"
-
-# Hashing
 sha2 = "0.10"
 sha3 = "0.10"
 blake3 = "1.5"
-
-# Serialisation
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 hex = "0.4"
-
-# Error handling
 thiserror = "1.0"
 anyhow = "1.0"
-
-# Timing-safe comparison
 subtle = "2.5"
 
-# Constant-time operations
-ct-codecs = "1.1"
-
 [dev-dependencies]
-criterion = { version = "0.5", features = ["html_reports"] }
 proptest = "1.4"
-tokio = { version = "1", features = ["full"] }
 
-[[bench]]
-name = "keygen_bench"
-harness = false
+[features]
+default = ["std"]
+std = []
+enclave = []
+qrng-api = []
+dev-mode = []
 
 [profile.release]
 opt-level = 3
 lto = true
 codegen-units = 1
 panic = "abort"
-strip = false        # Keep symbols for audit tooling
-
-[profile.release-audit]
-inherits = "release"
-debug = true         # Full debug info for auditors
-
-[features]
-default = ["std"]
-std = []
-# Enable hardware secure enclave integration
-enclave = []
-# Enable QRNG external API
-qrng-api = []
