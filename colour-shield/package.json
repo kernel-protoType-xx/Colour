@@ -1,0 +1,44 @@
+{
+  "name": "colour-shield",
+  "version": "0.1.0",
+  "description": "Post-quantum cryptographic security layer for npm, pip, and cargo package managers",
+  "main": "src/index.js",
+  "bin": {
+    "colour-shield": "./src/cli.js",
+    "cs": "./src/cli.js"
+  },
+  "scripts": {
+    "test": "node tests/run.js",
+    "test:verifier": "node tests/verifier.test.js",
+    "test:audit": "node tests/audit.test.js",
+    "test:interceptor": "node tests/interceptor.test.js"
+  },
+  "keywords": [
+    "security",
+    "supply-chain",
+    "post-quantum",
+    "cryptography",
+    "npm",
+    "pip",
+    "cargo",
+    "package-manager",
+    "cure53",
+    "colour-foundation"
+  ],
+  "author": "Colour Foundation <buildwithcolours@gmail.com>",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thecolourfoundation/Colour"
+  },
+  "homepage": "https://github.com/thecolourfoundation/Colour#colour-shield",
+  "bugs": {
+    "email": "buildwithcolours@gmail.com"
+  },
+  "dependencies": {
+    "commander": "^11.1.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+  }
