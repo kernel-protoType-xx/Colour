@@ -17,14 +17,25 @@ const T = {
   dim   : s => `\x1b[2m${s}\x1b[0m`,
 };
 
-console.log('\n' + T.cyan(T.bold('  ◆ COLOUR SHIELD — Test Suite')));
+console.log('');
+console.log(T.cyan(T.bold('  ◆ COLOUR SHIELD — Test Suite')));
 console.log(T.dim('  Colour Foundation · Cure53 audited'));
 
 let allPassed = true;
+
 for (const testFile of tests) {
-  try { execSync(`node ${path.join(__dirname, '..', testFile)}`, { stdio: 'inherit' }); }
-  catch { allPassed = false; }
+  const fullPath = path.join(__dirname, '..', testFile);
+  try {
+    execSync(`node ${fullPath}`, { stdio: 'inherit' });
+  } catch {
+    allPassed = false;
+  }
 }
 
-if (allPassed) { console.log(T.green(T.bold('  ✓  All tests passed\n'))); process.exit(0); }
-else { console.log(T.red(T.bold('  ✗  Some tests failed\n'))); process.exit(1); }
+if (allPassed) {
+  console.log(T.green(T.bold('  ✓  All tests passed\n')));
+  process.exit(0);
+} else {
+  console.log(T.red(T.bold('  ✗  Some tests failed\n')));
+  process.exit(1);
+    }
