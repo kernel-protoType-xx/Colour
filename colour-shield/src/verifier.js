@@ -10,13 +10,7 @@ const COLOUR_CORE_PATH = path.join(os.homedir(), '.colour-shield', 'core');
 const THREAT_DB_PATH   = path.join(os.homedir(), '.colour-shield', 'threats.json');
 const THREAT_DB_TTL_MS = 6 * 60 * 60 * 1000;
 
-const SEVERITY = Object.freeze({
-  CRITICAL : 'CRITICAL',
-  HIGH     : 'HIGH',
-  MEDIUM   : 'MEDIUM',
-  LOW      : 'LOW',
-  INFO     : 'INFO',
-});
+const SEVERITY = Object.freeze({ CRITICAL:'CRITICAL', HIGH:'HIGH', MEDIUM:'MEDIUM', LOW:'LOW', INFO:'INFO' });
 
 const BUNDLED_THREATS = new Map([
   ['event-stream@3.3.6',      { cve: null,              reason: 'Malicious code injected by compromised maintainer' }],
@@ -98,9 +92,9 @@ function loadThreatDatabase() {
   const db = new Map(BUNDLED_THREATS);
   if (!fs.existsSync(THREAT_DB_PATH)) return db;
   try {
-    const raw    = fs.readFileSync(THREAT_DB_PATH, 'utf8');
+    const raw = fs.readFileSync(THREAT_DB_PATH, 'utf8');
     const cached = JSON.parse(raw);
-    const age    = Date.now() - (cached.timestamp || 0);
+    const age = Date.now() - (cached.timestamp || 0);
     if (age < THREAT_DB_TTL_MS && Array.isArray(cached.threats)) {
       for (const t of cached.threats) db.set(t.id, { cve: t.cve, reason: t.reason });
     }
@@ -165,12 +159,7 @@ function fetchNpmMetadata(packageName, version) {
   return new Promise((resolve, reject) => {
     const encoded = encodeURIComponent(packageName).replace('%40', '@');
     const urlPath = version ? `/${encoded}/${encodeURIComponent(version)}` : `/${encoded}/latest`;
-    const options = {
-      hostname : 'registry.npmjs.org',
-      path     : urlPath,
-      headers  : { 'Accept': 'application/json', 'User-Agent': 'colour-shield/0.1.0' },
-      timeout  : 8000,
-    };
+    const options = { hostname: 'registry.npmjs.org', path: urlPath, headers: { 'Accept': 'application/json', 'User-Agent': 'colour-shield/0.1.0' }, timeout: 8000 };
     const req = https.get(options, (res) => {
       if (res.statusCode === 404) return reject(new Error(`Package '${packageName}' not found`));
       let data = '';
@@ -190,7 +179,7 @@ async function verifyPackage(packageName, version, ecosystem = 'npm') {
     timestamp: new Date().toISOString(),
   };
 
-  const threatDb    = loadThreatDatabase();
+  const threatDb = loadThreatDatabase();
   const versionedId = `${packageName}@${version}`;
 
   if (threatDb.has(versionedId)) {
@@ -215,12 +204,10 @@ async function verifyPackage(packageName, version, ecosystem = 'npm') {
     const pqResult = verifyPostQuantumSignature(packageName, version, null);
     if (pqResult.available) {
       result.signature = { verified: pqResult.valid, algorithm: pqResult.algorithm, method: 'post-quantum' };
-      if (!pqResult.valid) {
-        result.warnings.push({ type: 'PQ_UNVERIFIED', severity: SEVERITY.MEDIUM, message: `${packageName} not in Colour signature registry`, detail: 'Not yet signed by Colour Foundation' });
-      }
+      if (!pqResult.valid) result.warnings.push({ type: 'PQ_UNVERIFIED', severity: SEVERITY.MEDIUM, message: `${packageName} not in Colour signature registry`, detail: 'Not yet signed by Colour Foundation' });
     }
   } else {
-    result.signature = { verified: false, method: 'classical-sha256', note: 'Install Colour core for full post-quantum verification' };
+    result.signature = { verified: false, method: 'classical-sha256' };
   }
 
   if (ecosystem === 'npm') {
@@ -259,15 +246,4 @@ async function verifyPackage(packageName, version, ecosystem = 'npm') {
   return result;
 }
 
-module.exports = {
-  verifyPackage,
-  checkTyposquat,
-  computeProvenanceHash,
-  levenshtein,
-  colourCoreAvailable,
-  loadThreatDatabase,
-  BUNDLED_THREATS,
-  TYPOSQUAT_MAP,
-  FUZZY_TARGETS,
-  SEVERITY,
-};
+module.exports = { verifyPackage, checkTyposquat, computeProvenanceHash, levenshtein, colourCoreAvailable, loadThreatDatabase, BUNDLED_THREATS, TYPOSQUAT_MAP, FUZZY_TARGETS, SEVERITY };
